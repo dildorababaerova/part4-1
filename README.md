@@ -594,3 +594,9 @@ There is a slight issue in the way that we have specified the mode of the applic
 
 NB: If you are deploying this application to Fly.io/Render, keep in mind that if cross-env is saved as a development dependency, it would cause an application error on your web server. To fix this, change cross-env to a production dependency by running this in the command line:
 `npm install cross-env`
+
+
+SuperTest
+
+We will install the package as a development dependency:
+`npm install --save-dev supertest`
