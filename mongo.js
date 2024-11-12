@@ -1,14 +1,10 @@
+require('dotenv').config()
 const mongoose = require('mongoose')
 
-if (process.argv.length<3) {
-  console.log('give password as argument')
-  process.exit(1)
-}
 
-const password = process.argv[2]
 
-const url =
-  `mongodb+srv://48212:${password}@cluster0.7kuuk.mongodb.net/testBlogList?retryWrites=true&w=majority&appName=Cluster0`
+
+const url =process.env.TEST_MONGODB_URI
 
 mongoose.set('strictQuery',false)
 
