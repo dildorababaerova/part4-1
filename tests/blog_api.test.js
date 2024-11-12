@@ -17,15 +17,16 @@ after(async () => {
   await mongoose.connection.close()
 })
 
-test('there are two notes', async () => {
-  const response = await api.get('/api/notes')
+test('there are 4 blogs', async () => {
+  const response = await api.get('/api/blogs')
+  console.log(response.body);
 
-  assert.strictEqual(response.body.length, 2)
+  assert.strictEqual(response.body.length, 4)
 })
 
-test('the first note is about HTTP methods', async () => {
-  const response = await api.get('/api/notes')
+test('the first blog\'s title is "Blalalal"', async () => {
+  const response = await api.get('/api/blogs')
 
-  const contents = response.body.map(e => e.content)
-  assert(contents.includes('HTML is easy'), true)
+  const titles = response.body.map(e => e.title)
+  assert.strictEqual(titles.includes('Blalalal'), true)
 })
