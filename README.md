@@ -600,3 +600,33 @@ SuperTest
 
 We will install the package as a development dependency:
 `npm install --save-dev supertest`
+
+
+### Running tests one by one 
+
+* There are a few different ways of accomplishing this, one of which is the only method. With this method we can define in the code what tests should be executed:
+
+```js
+test.only('notes are returned as json', async () => {
+  await api
+    .get('/api/notes')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
+
+test.only('there are two notes', async () => {
+  const response = await api.get('/api/notes')
+
+  assert.strictEqual(response.body.length, 2)
+})
+```
+When tests are run with option `--test-only`, that is, with the command: `npm test -- --test-only`
+
+* Another option is to specify the tests that need to be run as arguments of the `npm test` command.
+
+The following command only runs the tests found in the tests/note_api.test.js file:
+ 
+ `npm test -- tests/note_api.test.js`
+
+* The --tests-by-name-pattern option can be used for running tests with a specific name:
+`npm test -- --test-name-pattern="the first note is about HTTP methods"`

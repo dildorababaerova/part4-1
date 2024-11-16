@@ -32,7 +32,7 @@ beforeEach(async () => {
 })
 
 // Тест: проверка количества заметок
-test('there are two blogs', async () => {
+test.only('there are two blogs', async () => {
   const response = await api.get('/api/blogs')
 
   // Проверка, что количество заметок соответствует количеству начальных данных
