@@ -630,3 +630,56 @@ The following command only runs the tests found in the tests/note_api.test.js fi
 
 * The --tests-by-name-pattern option can be used for running tests with a specific name:
 `npm test -- --test-name-pattern="the first note is about HTTP methods"`
+
+### async/await in the backend
+
+* The await keyword can't be used just anywhere in JavaScript code. Using await is possible only inside of an async function.
+
+```js
+const main = async () => {
+  const notes = await Note.find({})
+  console.log('operation returned the following notes', notes)
+
+  const response = await notes[0].deleteOne()
+  console.log('the first note is removed')
+}
+
+
+main()
+```
+- With `async/await` the recommended way of dealing with exceptions is the old and familiar `try/catch` mechanism:
+
+### Eliminating the try-catch
+
+* One starts to wonder if it would be possible to refactor the code to eliminate the catch from the methods?
+
+- The `express-async-errors` library has a solution for this.
+Let's install the library
+`npm install express-async-errors`
+
+Using the library is very easy. You introduce the library in app.js, before you import your routes:
+```js
+const config = require('./utils/config')
+const express = require('express')
+
+require('express-async-errors')
+const app = express()
+const cors = require('cors')
+const notesRouter = require('./controllers/notes')
+const middleware = require('./utils/middleware')
+const logger = require('./utils/logger')
+const mongoose = require('mongoose')
+
+// ...
+
+module.exports = app
+```
+
+- The 'magic' of the library allows us `to eliminate the try-catch blocks completely`. For example the route for deleting a note
+```js
+notesRouter.delete('/:id', async (request, response) => {
+  await Note.findByIdAndDelete(request.params.id)
+  response.status(204).end()
+})
+```
+* Because of the library, we do not need the next(exception) call anymore. The library handles everything under the hood. If an exception occurs in an async route, the execution is automatically passed to the error-handling middleware.

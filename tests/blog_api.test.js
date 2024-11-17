@@ -14,11 +14,10 @@ beforeEach(async () => {
   // Очистка базы данных перед каждым тестом
   await Blog.deleteMany({})
 
-  // Добавление начальных заметок
-  let blogsObject = new Blog(helper.initialBlogs[0])
-  await blogsObject.save()
-  blogsObject = new Blog(helper.initialBlogs[1])
-  await blogsObject.save()
+  for (let blog of helper.initialBlogs) {
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
 })
 
 // Тест: проверка количества заметок
