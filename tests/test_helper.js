@@ -11,6 +11,11 @@ const initialBlogs = [
       author: "Didi",
       url: "http//:raseko.com/information",
       likes: 200000000000 },
+    
+    { title: "Test3 title",
+      author: "Didi",
+      url: "http//:raseko.com/information",
+      likes: 200000000000 },
   ]
 
 const nonExistingId = async () => {
@@ -25,6 +30,18 @@ const nonExistingId = async () => {
 
   return blog._id.toString()
 }
+
+// const nonExistingLikes = async () => {
+//   const blog = new Blog({ 
+//     title: "willremovethissoon",
+//     author: "Didi",
+//     url: "http//:raseko.com/remove"
+// })
+//   await blog.save()
+//   return blog
+// }
+
+
 
 const blogsInDb = async () => {
   const blogs= await Blog.find({})

@@ -37,6 +37,7 @@ test('the first blog is about HTTP methods', async () => {
   assert(titles.includes('Test title'))
 })
 
+
 test('a valid blog can be added ', async () => {
   const newBlog = 
   {
@@ -59,6 +60,28 @@ test('a valid blog can be added ', async () => {
   const titles = blogsAtEnd.map(r => r.title)
 
   assert(titles.includes('New blog'))
+})
+
+test('a without likes blog can be added ', async () => {
+    const blogWithoutLikes = { 
+    title: "willremovethissoon",
+    author: "Didi",
+    url: "http//:raseko.com/remove"
+}
+  
+  await api
+    .post('/api/blogs')
+    .send(blogWithoutLikes)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  console.log('New Blog without likes added refferenced to local console', blogWithoutLikes)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].likes, 0)
+
 })
 
 test('blog without content is not added', async () => {
@@ -110,6 +133,7 @@ test('a blog can be deleted', async () => {
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
+
 
 
 
