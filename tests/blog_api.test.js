@@ -156,6 +156,29 @@ describe('when there is initially some notes saved', () => {
 })
 
 
+describe('viewing a specific note', () => {
+  test('update a specific blog', async () => {
+
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+    const updatedData = { likes: 15 };
+
+    const response = await api
+    .put(`/api/blogs/${blogToUpdate._id}`)   // Используем ID первого блога
+    .send(updatedData)
+    .expect(200)
+    .expect('Content-Type', /application\/json/);
+
+  // Проверяем, что значение likes обновилось
+  expect(response.body.likes).toBe(15);
+
+  // Убеждаемся, что данные в базе тоже обновлены
+  const updatedBlog = await Blog.findById(blogToUpdate._id);
+  expect(updatedBlog.likes).toBe(15);
+
+})
+})
+
 after(async () => {
   // Закрытие соединения с базой данных после выполнения тестов
   await mongoose.connection.close()
