@@ -68,7 +68,7 @@ blogsRouter.get('/hello', (request, response) => {
   
     
       const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-      response.json(updatedBlog)
+      response.status(200).json(updatedBlog)
       console.log("Updated", updatedBlog)
   })
 
