@@ -170,11 +170,11 @@ describe('when there is initially some notes saved', () => {
       .expect('Content-Type', /application\/json/);
       
       // Проверяем, что значение likes обновилось
-      expect(response.body.likes).toBe(15);
+      assert.strictEqual(response.body.likes, updatedData.likes);
       
       // Убеждаемся, что данные в базе тоже обновлены
       const updatedBlog = await Blog.findById(blogToUpdate.id);
-      expect(updatedBlog.likes).toBe(11);
+      assert.strictEqual(updatedBlog.likes, 11);
       
     })
   })
