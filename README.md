@@ -686,4 +686,4 @@ notesRouter.delete('/:id', async (request, response) => {
 
 ### Creating users
 
-* Let's install the bcrypt package for generating the password hashes: `npm install bcrypt`
+* Let's install the bcrypt package for generating the password hashes: `npm install bcrypt`. (If VS code's console references error, run this command `npm audit fix` then `npm update`) 
