@@ -42,7 +42,7 @@ blogsRouter.get('/', async (request, response) => {
       author: body.author,
       url: body.url,
       likes: body.likes || 0,
-      user: user.id
+      user: user._id
     })
     
 
