@@ -684,6 +684,169 @@ notesRouter.delete('/:id', async (request, response) => {
 ```
 * Because of the library, we do not need the next(exception) call anymore. The library handles everything under the hood. If an exception occurs in an async route, the execution is automatically passed to the error-handling middleware.
 
+### Mongoosa schema for users
+
+* To store the ids of the notes created by the user in the user document: `models/user.js`:
+
+```js
+const mongoose = require('mongoose')
+
+const userSchema = new mongoose.Schema({
+  username: String,
+  name: String,
+  passwordHash: String,
+  notes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Note'
+    }
+  ],
+})
+
+userSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+    // the passwordHash should not be revealed
+    delete returnedObject.passwordHash
+  }
+})
+
+const User = mongoose.model('User', userSchema)
+
+module.exports = User
+
+```
+
+* Let's expand the schema of the note defined in the `models/note.js` file so that the note contains information about the user who created it:
+
+```js
+const noteSchema = new mongoose.Schema({
+  content: {
+    type: String,
+    required: true,
+    minlength: 5
+  },
+  important: Boolean,
+
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+})
+```
+
+
+
+
 ### Creating users
 
 * Let's install the bcrypt package for generating the password hashes: `npm install bcrypt`. (If VS code's console references error, run this command `npm audit fix` then `npm update`) 
+
+- Let's define a separate router for dealing with users in a new `controllers/users.js` file. Let's take the router into use in our application in the app.js file, so that it handles requests made to the /api/users url:
+
+```js
+const usersRouter = require('./controllers/users')
+
+// ...
+
+app.use('/api/users', usersRouter)
+```
+- The contents of the file, `controllers/users.js,` that defines the router is as follows:
+```js
+const bcrypt = require('bcrypt')
+const usersRouter = require('express').Router()
+const User = require('../models/user')
+
+usersRouter.post('/', async (request, response) => {
+  const { username, name, password } = request.body
+
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash(password, saltRounds)
+
+  const user = new User({
+    username,
+    name,
+    passwordHash,
+  })
+
+  const savedUser = await user.save()
+
+  response.status(201).json(savedUser)
+})
+
+module.exports = usersRouter
+```
+
+-The password sent in the request is not stored in the database. We store the hash of the password that is generated with the `bcrypt.hash` function.
+
+* Mongoose validations do not detect the index violation, and instead of ValidationError they return an error of type MongoServerError. We therefore need to extend the error handler for that case:
+
+```js
+const errorHandler = (error, request, response, next) => {
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+
+  } else if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')) {
+    return response.status(400).json({ error: 'expected `username` to be unique' })
+  }
+
+  next(error)
+}
+```
+
+### Creating a new note
+
+* Let's expand our current implementation in `controllers/notes.js` so that the information about the user who created a note is sent in the userId field of the request body:`
+
+```js
+const User = require('../models/user')
+
+//...
+
+notesRouter.post('/', async (request, response) => {
+  const body = request.body
+
+
+  const user = await User.findById(body.userId)
+
+  const note = new Note({
+    content: body.content,
+    important: body.important === undefined ? false : body.important,
+
+    user: user.id
+  })
+
+  const savedNote = await note.save()
+
+  user.notes = user.notes.concat(savedNote._id)
+  await user.save()
+  
+  response.status(201).json(savedNote)
+})
+```
+
+### Populate
+
+* We would like our API to work in such a way, that when an HTTP GET request is made to the `/api/users route`, the user objects would also contain `the contents of the user's notes` and not just their id. In a relational database, this functionality would be implemented with a join query.
+
+With join queries in Mongoose, `nothing can guarantee` that the state between the collections being joined is consistent, meaning that if we make a query that joins the user and notes collections, the `state` of the collections `may change` during the query.
+
+```js
+usersRouter.get('/', async (request, response) => {
+
+  const users = await User
+    .find({}).populate('notes')
+
+  response.json(users)
+})
+```
+- The argument given to the populate method defines that the `ids` referencing `note objects` in the `notes` field of the` user` document will be replaced by the referenced `note documents`.
+
+
+## Token authentication
+
+* Install the `jsonwebtoken` library, which allows us to generate JSON web tokens. `npm install jsonwebtoken`
