@@ -1,39 +1,52 @@
-
+const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blogs')
 const User = require('../models/user')
 
 blogsRouter.get('/hello', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
-  })
-  
+  response.send('<h1>Hello World!</h1>')
+})
+
 blogsRouter.get('/', async (request, response) => {
   
-    const blogs = await Blog
-    .find({}).populate('user', {username: 1, name: 1})
-    response.json(blogs)
+  const blogs = await Blog
+  .find({}).populate('user', {username: 1, name: 1})
+  response.json(blogs)
   
 })  
 
-  blogsRouter.get('/info', async (request, response) => {
-    
-    const blogs = await Blog.find({})
-        response.send(`<p>There are ${blogs.length} blogs in the database</p><p>${new Date()}</p>`)
-  })
-
-  blogsRouter.get('/:id', async (request, response) => {
-      const blog = await Blog.findById(request.params.id);
-      if (blog) {
-        response.status(200).json(blog);
-      } else {
-        response.status(404).end();
-      }
-  });
-
-  blogsRouter.post('/', async (request, response) => {
-    const body = request.body
+blogsRouter.get('/info', async (request, response) => {
   
-    const user = await User.findById(body.userId)
+  const blogs = await Blog.find({})
+  response.send(`<p>There are ${blogs.length} blogs in the database</p><p>${new Date()}</p>`)
+})
+
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+  if (blog) {
+    response.status(200).json(blog);
+  } else {
+    response.status(404).end();
+  }
+});
+
+const getTokenFrom = request => {  
+  const authorization = request.get('authorization')  
+  if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')  
+      }  
+      return null
+    }
+
+    
+    blogsRouter.post('/', async (request, response) => {
+      const body = request.body
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)  
+    if (!decodedToken.id) {
+          return response.status(401).json({ error: 'token invalid' })  
+        }  
+    const user = await User.findById(decodedToken.id)
+  
     console.log("User", user)
 
     
