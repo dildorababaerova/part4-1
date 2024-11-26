@@ -1,3 +1,4 @@
+const { min } = require('lodash')
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
@@ -5,10 +6,15 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true // this ensures the uniqueness of username
+    unique: true, // this ensures the uniqueness of username
+    minlength:[3, 'username must be at least 3 characters long']
   },
   name: String,
-  passwordHash: String,
+  passwordHash: {
+    type: String,
+    required: true,
+    minlength:[3, 'password must be at least 3 characters long']
+  },
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,

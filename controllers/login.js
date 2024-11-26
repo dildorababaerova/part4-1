@@ -6,6 +6,10 @@ const User = require('../models/user')
 loginRouter.post('/', async (request, response) => {
   const { username, password } = request.body
 
+  if (!username || username.length < 3 || !password || password.length < 3) {
+    response.status(400).json({ error: 'username must be at least 3 characters long' })
+  }
+
   const user = await User.findOne({ username })
   const passwordCorrect = user === null
     ? false
