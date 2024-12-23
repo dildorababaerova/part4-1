@@ -6,8 +6,11 @@ const User = require('../models/user')
 loginRouter.post('/', async (request, response) => {
   const { username, password } = request.body
 
-  if (!username || username.length < 3 || !password || password.length < 3) {
-    response.status(400).json({ error: 'username must be at least 3 characters long' })
+  if (!username || username.length < 3) {
+    return response.status(400).json({ error: 'username must be at least 3 characters long' })
+  }
+  if (!password || password.length < 3) {
+    return response.status(400).json({ error: 'password must be at least 3 characters long' })
   }
 
   const user = await User.findOne({ username })
@@ -29,7 +32,7 @@ loginRouter.post('/', async (request, response) => {
   const token = jwt.sign(
     userForToken,
     process.env.SECRET,
-    { expiresIn: 600*60 }
+    { expiresIn: 3600 }
   )
 
   response

@@ -2,8 +2,8 @@ POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-    "username": "mluukkai",
-    "password": "salainen"
+    "username": "sabisabi",
+    "password": "salomat"
    
    
 }
@@ -13,9 +13,9 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "Didi",
-    "name": "Didi",
-    "password": "Zhasur!72"
+    "username": "sabisabi",
+    "name": "fiksu",
+    "password": "salomat"
    
 }
 
@@ -26,20 +26,20 @@ Content-Type: application/json
 
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NzQwNDYwNGMzZmRiMjQ5YTEyMjVhZDciLCJpYXQiOjE3MzQ5NzIwMDEsImV4cCI6MTczNTAwODAwMX0.ENCNbneus9x6ltWG9bd4KPm1zECLozsXTp9jAonZ1BI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhYmlzYWJpIiwiaWQiOiI2NzY5ZDg0MTYwMjAyZTQxZGNjN2FmMzYiLCJpYXQiOjE3MzQ5OTA4NTMsImV4cCI6MTczNDk5NDQ1M30.uspl0SbwPa09u3uSQqw7HkxEEMDSejEJAakbFOf7UWY
 
 
 {
-    "title": "Mahtava testi",
-    "author": "Matti Luukkainen",
+    "title": "Taas sabin testi",
+    "author": "älykas",
     "url": "www.testi.fi",
-    "likes": 1111111
+    "likes": 222222222
 }
 
 
-### 
-GET http://localhost:3003/api/blogs
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NzQwNDYwNGMzZmRiMjQ5YTEyMjVhZDciLCJpYXQiOjE3MzQyNTk4NTUsImV4cCI6MTczNDI2MzQ1NX0.HvCwBrMkelZQUCs9safOxqMPB6hK8Y6tzOgcBN5dXgI
+# ### 
+# GET http://localhost:3003/api/blogs
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NzQwNDYwNGMzZmRiMjQ5YTEyMjVhZDciLCJpYXQiOjE3MzQyNTk4NTUsImV4cCI6MTczNDI2MzQ1NX0.HvCwBrMkelZQUCs9safOxqMPB6hK8Y6tzOgcBN5dXgI
 
 
