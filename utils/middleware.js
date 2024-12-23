@@ -47,15 +47,21 @@ const errorHandler = (error, request, response, next) => {
 
 const userExtractor = async (request, response, next) => {
   const token = request.token 
+  try {
+    if (token) {
+      const decodedToken = jwt.verify(token, process.env.SECRET)
+      if (decodedToken.id) {
+      const user = await User.findById(decodedToken.id)
+      request.user = user;
+      logger.info('User extracted', user)
+    }
+    } else {
+      return response.status(401).json({ error: 'authorization failed, missed token' })
+    }
+  } catch (error) {
+      logger.error('error in userExtractor', error.message)
+      return response.status(401).json({ error: 'token invalid' })
 
-  if (token) {
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    if (decodedToken.id) {
-    const user = await User.findById(decodedToken.id)
-    request.user = user;
-  }
-  } else {
-    return response.status(401).json({ error: 'authorization failed, missed token' })
   }
     next()
   }

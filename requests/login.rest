@@ -26,14 +26,14 @@ Content-Type: application/json
 
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NzQwNDYwNGMzZmRiMjQ5YTEyMjVhZDciLCJpYXQiOjE3MzQzNTIzMjQsImV4cCI6MTczNDM1NTkyNH0.dp6WRpuNSRntvHDypaReDaOwlUrgSNXmWFFxDyPKXMQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NzQwNDYwNGMzZmRiMjQ5YTEyMjVhZDciLCJpYXQiOjE3MzQ5NzIwMDEsImV4cCI6MTczNTAwODAwMX0.ENCNbneus9x6ltWG9bd4KPm1zECLozsXTp9jAonZ1BI
 
 
 {
-    "title": "TestiDididi",
-    "author": "Testaaja",
+    "title": "Mahtava testi",
+    "author": "Matti Luukkainen",
     "url": "www.testi.fi",
-    "likes": 220000
+    "likes": 1111111
 }
 
 

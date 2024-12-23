@@ -1,6 +1,7 @@
 // const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blogs')
+const middleware = require('../utils/middleware')
 // const User = require('../models/user')
 
 blogsRouter.get('/hello', (request, response) => {
@@ -31,7 +32,7 @@ blogsRouter.get('/:id', async (request, response) => {
 });
 
     
-    blogsRouter.post('/', async (request, response) => {
+    blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
       const body = request.body;
       const user = request.user;
 
@@ -44,7 +45,7 @@ blogsRouter.get('/:id', async (request, response) => {
     // console.log("User", user)
 
     if (!user) {
-      return response.status(401).json({ error: 'token invalid' })  
+      return response.status(401).json({ error: 'token invalid, User does not' })  
     }
     
     const blog = new Blog({
@@ -60,7 +61,8 @@ blogsRouter.get('/:id', async (request, response) => {
       return response.status(400).json({ error: 'title, author, and url are required' });
     }
     
-  
+    console.log('Saving blog:', blog);
+
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
