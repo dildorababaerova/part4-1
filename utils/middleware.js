@@ -1,6 +1,6 @@
 const logger = require('./logger')
-// const jwt = require('jsonwebtoken')
-// const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
@@ -46,40 +46,28 @@ const errorHandler = (error, request, response, next) => {
 //   next();
 // };
 
-// const userExtractor = async (request, response, next) => {
-//   const token = request.tokenExtractor;
-//   try {
-//     if (token) {
-//       const decodedToken = jwt.verify(token, process.env.SECRET);
-//       logger.info('Decoded token:', decodedToken);
-//       if (decodedToken.id) {
-//         const user = await User.findById(decodedToken.id);
-//         if (!user) {
-//           logger.error('User not found in database');
-//           return response.status(404).json({ error: 'user not found' });
-//         }
-//         request.user = user;
-//         logger.info('User extracted:', user);
-//       } else {
-//         logger.error('Decoded token missing user ID');
-//         return response.status(401).json({ error: 'token invalid' });
-//       }
-//     } else {
-//       logger.error('Token is missing in request');
-//       return response.status(401).json({ error: 'authorization failed, missed token' });
-//     }
-//   } catch (error) {
-//     logger.error('Error in userExtractor:', error.message);
-//     return response.status(401).json({ error: 'token invalid' });
-//   }
-//   next();
-// };
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '');
+  }
+  next();
+};
 
+const userExtractor = async (request, response, next) => {
+  if (request.token) {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (decodedToken.id) {
+      request.user = await User.findById(decodedToken.id);
+    }
+  }
+  next();
+};
 
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  // tokenExtractor,
-  // userExtractor
+  tokenExtractor,
+  userExtractor
 }
