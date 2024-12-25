@@ -12,6 +12,7 @@ blogsRouter.get('/hello', (request, response) => {
 })
 
 blogsRouter.get('/', async (request, response) => {
+  
   const blogs = await Blog
   .find({}).populate('user', {username: 1, name: 1})
   response.json(blogs)
@@ -19,8 +20,9 @@ blogsRouter.get('/', async (request, response) => {
 })  
 
 blogsRouter.get('/info', async (request, response) => {
+  
   const blogs = await Blog.find({})
-  response.send(`<p>There are '${blogs.length}' blogs in the database</p><p>${new Date()}</p>`)
+  response.send(`<p>There are ${blogs.length} blogs in the database</p><p>${new Date()}</p>`)
 })
 
 blogsRouter.get('/:id', async (request, response) => {
@@ -51,10 +53,10 @@ blogsRouter.get('/:id', async (request, response) => {
     //     }  
     // const user = await User.findById(decodedToken.id)
   
-    // console.log("User", user)
+    console.log("User", user)
 
     if (!user) {
-      return response.status(401).json({ error: 'user not authenticated' })  
+      return response.status(401).json({ error: 'token invalid, User does not' })  
     }
     
     const blog = new Blog({
@@ -80,29 +82,38 @@ blogsRouter.get('/:id', async (request, response) => {
   });
 
   blogsRouter.delete('/:id', async (request, response) => {
-    const user = request.user;
-    const blog = await Blog.findById(request.params.id)
-
-    // if (!blog) {
-    //   return response.status(404).json({ error: 'blog not found' });
-    // } 
-      
-    if (blog.user.toString() !== user._id.toString()) {
-      return response.status(403).json({ error: 'only the creator can delete this blog' });
+    if (!request.user) {
+      return response.status(401).json({ error: 'Unauthorized: user not authenticated' });
     }
-
-    await Blog.findByIdAndDelete(request.params.id)
-        response.status(204).end()
+  
+    const user = request.user;
+    console.log('User:', user);
+  
+    // const blog = await Blog.findById(request.params.id).populate('user', { _id: 1 });
+    // if (!blog) {
+    //   return response.status(404).json({ error: 'Blog not found' });
+    // }
+  
+    // if (!blog.user || blog.user._id.toString() !== user._id.toString()) {
+    //   return response.status(403).json({ error: 'Only the creator can delete this blog' });
+    // }
+  
+    await Blog.findByIdAndDelete(request.params.id);
+    response.status(204).end();
   });
+  
+  
   
   blogsRouter.put('/:id', async (request, response) => {
     const body = request.body
+    const user = request.user;
   
     const blog = {
       title: body.title,
       author: body.author,
       url: body.url,
-      likes: body.likes
+      likes: body.likes,
+      user: user._id
     }
   
     
@@ -112,5 +123,4 @@ blogsRouter.get('/:id', async (request, response) => {
   })
 
   module.exports = blogsRouter
-  
   

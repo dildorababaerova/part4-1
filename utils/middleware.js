@@ -48,22 +48,32 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization');
+  console.log('Authorization header:', authorization); // Логируем заголовок
   if (authorization && authorization.startsWith('Bearer ')) {
     request.token = authorization.replace('Bearer ', '');
+  } else {
+    console.log('No valid Authorization header found'); // Сообщаем, если заголовок отсутствует
   }
   next();
 };
+
 
 const userExtractor = async (request, response, next) => {
-  if (request.token) {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-    if (decodedToken.id) {
-      request.user = await User.findById(decodedToken.id);
+  try {
+    if (request.token) {
+      const decodedToken = jwt.verify(request.token, process.env.SECRET);
+      if (decodedToken.id) {
+        request.user = await User.findById(decodedToken.id);
+        console.log('Extracted user:', request.user);
+      }
+    } else {
+      console.log('No token provided');
     }
+  } catch (error) {
+    console.error('Error in userExtractor:', error);
   }
   next();
 };
-
 module.exports = {
   requestLogger,
   unknownEndpoint,
